@@ -9,6 +9,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
+
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,14 +49,14 @@ public class LoginWindow {
 	}
 
 	/**
-	 * Create the application.
+	 * Create the application.import javax.transaction.Transaction;
 	 */
 	public LoginWindow() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the contents of the frame.
+	 * Initialize the contents of thimport javax.transaction.Transaction;e frame.
 	 */
 	private void initialize() {
 		frame = new JFrame();
@@ -70,7 +79,7 @@ public class LoginWindow {
 		frame.getContentPane().add(lblPassword);
 		
 		textField = new JTextField();
-		textField.setBounds(178, 55, 138, 19);
+	textField.setBounds(178, 55, 138, 19);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 		
@@ -85,18 +94,29 @@ public class LoginWindow {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				try {
+					
+			
 				   String username = textField.getText().trim();
+				   int userid = Integer.parseInt(username);
 				   String password = passwordField_1.getText().trim(); 
 				   if(username.equals("")&&password.equals("")) {
 		             JOptionPane.showMessageDialog(new JFrame(), "All Fields Are Required To Fill");
 				   }
 				   else {
 				 try {
-					 Connection con =new ConnectionManager().getConnection();
-					 Statement s = con.createStatement();
-					 ResultSet rs= s.executeQuery("SELECT * FROM user WHERE id = '"+username+"';");
-					 rs.next();
-					 if(rs.getString("id").equals(username)&&rs.getString("password").equals(password))
+					
+					 
+					 Configuration c = new Configuration().configure().addAnnotatedClass(User.class);
+					  ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(c.getProperties()).build();
+				SessionFactory sf = c.buildSessionFactory(sr);
+				Session s = sf.openSession();
+				Transaction t = s.beginTransaction();
+			
+				 User ad = s.get(User.class,userid);
+				 t.commit();
+				
+					  if(ad!=null)
 							 {
 						  UserPanel userPanel = new UserPanel();
 						  userPanel.setSize(1080, 720);
@@ -110,6 +130,9 @@ public class LoginWindow {
 				    JOptionPane.showMessageDialog(new JFrame(),e.getMessage());
 				}
 				   }
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(new JFrame(),e.getMessage());
+				}
 			}
 		});
 		JButton btnAdmin = new JButton("Admin");
