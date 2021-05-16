@@ -10,10 +10,15 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import com.mysql.cj.log.NullLogger;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 import MainPacakge.ConnectionManager;
-import MainPacakge.DialogFrame;
+import MainPacakge.User;
 public class AddUserListener implements ActionListener {
     JTextField nameField ,passField,idField;
 	public AddUserListener( JTextField textFieldName,JTextField textFieldPassword,JTextField textFieldId) {            //Constructor For The AddUserListener
@@ -27,17 +32,27 @@ public class AddUserListener implements ActionListener {
 		String nameString = nameField.getText();
 		String passString = passField.getText().trim();
 		String idString = idField.getText().trim();
-		ConnectionManager connection = new ConnectionManager();
+		int id = Integer.parseInt(idString);
+		
+		
 		if(nameString.equals("")&&passString.equals("")&&idString.equals("")) {
 			JOptionPane.showMessageDialog(new JFrame(),"All Fields Are Required");
 		}
 		else {
-		String queryString = "INSERT INTO user VALUES( '"+nameString+"', '"+idString+"' , '"+passString+"');";
+		       
 		try {
-			Connection con= connection.getConnection();
-			Statement statement = con.createStatement();
-		   	int result = statement.executeUpdate(queryString);
-		   System.out.println("Row Affected "+result);
+		 User user = new User();
+		 user.setId(id);
+		 user.setName(nameString);
+		 user.setPassword(passString);
+			Configuration config = new Configuration().configure().addAnnotatedClass(User.class);
+			ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+			SessionFactory sf = config.buildSessionFactory();
+			Session s= sf.openSession();
+			Transaction t = s.beginTransaction();
+			s.save(user);
+			t.commit();
+			s.close();
 		    JOptionPane.showMessageDialog(null, "Data Added Sucessfully","Message",JOptionPane.INFORMATION_MESSAGE);
 		    
 			

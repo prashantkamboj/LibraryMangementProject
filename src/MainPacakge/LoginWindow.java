@@ -115,7 +115,7 @@ public class LoginWindow {
 			
 				 User ad = s.get(User.class,userid);
 				 t.commit();
-				
+				 s.close();
 					  if(ad!=null)
 							 {
 						  UserPanel userPanel = new UserPanel();

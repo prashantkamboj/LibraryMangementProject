@@ -12,6 +12,16 @@ import java.sql.Statement;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
+import com.sun.source.tree.LambdaExpressionTree.BodyKind;
+
 import javax.swing.JButton;
 
 public class Addbooks extends JFrame{
@@ -117,10 +127,21 @@ public class Addbooks extends JFrame{
 				 }else {
 				   
 					 try {
-						 Connection con =new  ConnectionManager().getConnection();
-						 Statement s = con.createStatement();
-						 boolean st = s.execute("INSERT INTO books VALUES('"+bookName+"','"+authorName+"','"+subjectName+"',"+
-						 quantity+",'"+id+"','"+rackNo+"');");
+						 Books book = new Books();
+						 book.setBookname(bookName);
+						 book.setAuthor(authorName);
+						 book.setId(id);
+						 book.setQuantity(quantity);
+						 book.setRackno(rackNo);
+						 book.setSubject(subjectName);
+						 Configuration config = new Configuration().configure().addAnnotatedClass(Books.class);
+						  ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+						  SessionFactory sf = config.buildSessionFactory(sr);
+						 Session session = sf.openSession();
+						 Transaction tr = session.beginTransaction();
+						 session.save(book);
+						 tr.commit();
+						 session.close(); 
 						 JOptionPane.showMessageDialog(Addbooks.this, "Books Added SuccessFully");
 						 
 					} catch (Exception e) {

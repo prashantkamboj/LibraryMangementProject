@@ -6,6 +6,13 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.JTextField;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import com.mysql.cj.protocol.Resultset;
 
 import javax.swing.JButton;
@@ -50,25 +57,32 @@ public class AdminLoginWindow extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				Connection connection = new ConnectionManager().getConnection();
 				String pass= passField.getText().trim();
-				ResultSet rs;
+				String idString = idField.getText().trim();
+				int id = Integer.parseInt(idString);
 				try {
-					Statement statement = connection.createStatement();
-					 rs= statement.executeQuery("SELECT * FROM admin");
-					 rs.next();
-					 String checkpass = rs.getString("password"); 
-					 String idcheck =rs.getString("id");
+					
+					 admin ad = new admin();
+					 Configuration config = new Configuration().configure().addAnnotatedClass(admin.class);
+					 ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+					 SessionFactory sf = config.buildSessionFactory(sr);
+					 Session ss =sf.openSession();
+					 Transaction tr = ss.beginTransaction();
+					  ad=(admin) ss.get(admin.class,id);
+					  tr.commit();
+					  String checkpass = ad.getPassword();
 					 if(pass.equals(checkpass)){
-						 AdminPanel ad = new AdminPanel();
-						 ad.setSize(650,300);
-						 ad.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-						 ad.setVisible(true);
+						 AdminPanel adp= new AdminPanel();
+						 adp.setSize(650,300);
+						 adp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+						 adp.setVisible(true);
 					 }
 					 else {
 						JOptionPane.showMessageDialog(new JFrame(), "Check Your Password"); 
 					 }
 					
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
+					JOptionPane.showMessageDialog(AdminLoginWindow.this, e.getMessage());
 					e.printStackTrace();
 				} 				
 			}

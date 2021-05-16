@@ -1,7 +1,12 @@
 package MainPacakge;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class Student {
  String name;
+ @Id
  String rollno;
  String classs;
  String ubookid;

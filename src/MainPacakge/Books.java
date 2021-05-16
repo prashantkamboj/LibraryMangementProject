@@ -1,5 +1,6 @@
 package MainPacakge;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 @Entity
@@ -8,7 +9,8 @@ public class Books {
   String author;
   String subject;
  int quantity;
- @Id 
+ @Id  
+ @Column(length = 20)
  String id;
  String Rackno;
 public String getBookname() {
