@@ -7,6 +7,14 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
+import org.hibernate.Transaction;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -66,12 +74,20 @@ public class AddStudent extends JFrame{
 					JOptionPane.showMessageDialog(AddStudent.this,"All Fields Are Required To Fill");
 					
 				}else {
+					Student student = new Student();
+					student.setName(name);
+					student.setRollno(rollNo);
+					student.setClasss(clas);
 					try {
-						Connection con = new ConnectionManager().getConnection();
-						Statement s = con.createStatement();
-						boolean t = s.execute("INSERT INTO students(name,rollno,class) VALUES('"+name+"','"+rollNo+"','"+clas+"');");
-						
-							JOptionPane.showMessageDialog(AddStudent.this, "Data Added Success Fully");
+					         Configuration config = new Configuration().configure().addAnnotatedClass(Student.class);
+					          ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+							  SessionFactory sf = config.buildSessionFactory(sr);
+							  Session ss = sf.openSession();
+							  Transaction tr = ss.beginTransaction();
+							  ss.save(student);
+							 tr.commit();
+							 ss.close();
+					          JOptionPane.showMessageDialog(AddStudent.this, "Data Added Success Fully");
 							nameField.setText("");
 							rollnoField.setText("");
 							classField.setText("");

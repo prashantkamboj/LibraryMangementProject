@@ -118,11 +118,19 @@ public class LoginWindow {
 				 s.close();
 					  if(ad!=null)
 							 {
+						       String pas =	ad.getPassword();
+						        
+						  if(password.equals(pas)){
 						  UserPanel userPanel = new UserPanel();
 						  userPanel.setSize(1080, 720);
 						  userPanel.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 						  userPanel.setVisible(true);
-					 }
+					 
+						  }else {
+							  JOptionPane.showMessageDialog( new JFrame(), "Check Your Password ");
+								  }
+						  }
+					  
 					 else {
 						JOptionPane.showMessageDialog(new JFrame(),"Check Your Username And Password");
 					}
