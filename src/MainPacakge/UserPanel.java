@@ -14,6 +14,15 @@ import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JTextField;
 import javax.xml.crypto.Data;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
@@ -22,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.Date;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
@@ -71,36 +81,28 @@ public class UserPanel extends JFrame {
 				  String [][] data;
 				  String []column = {"Name","Author","Subject","Quantity","Id","RackNo."};
 				  try {
-					 Connection con = new ConnectionManager().getConnection();
-					Statement s = con.createStatement();
-					Statement s1= con.createStatement();
-					
-					ResultSet rs1 = s1.executeQuery("SELECT count(*) FROM books WHERE subject ='"+subject+"';");
-					rs1.next();
-					
-					ResultSet rs = s.executeQuery("SELECT * FROM books WHERE subject = '"+subject+"';");
-					//rs.setFetchDirection(ResultSet.FETCH_REVERSE);
-					 rs.next();
-					
-                    int rowCount = rs1.getInt("count(*)");
+					   Configuration config = new Configuration().configure().addAnnotatedClass(Books.class);
+					   ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+					   SessionFactory sf = config.buildSessionFactory(sr);
+					   Session  s = sf.openSession();
+					   Query q =s.createQuery("FROM Books WHERE subject ='"+subject+"'");
+					   
+					   List<Books> bookList = q.list();			
+                    int rowCount =  bookList.size();
       
                    
-                   ResultSetMetaData rsmd = rs.getMetaData();
-                   int columnCount = rsmd.getColumnCount();
+                   //ResultSetMetaData rsmd = rs.getMetaData();
+                   int columnCount = 6;//smd.getColumnCount();
                     data = new String[rowCount][columnCount];
-				 for(int i=1;i<=rowCount;i++) {
-					 for(int j=1;j<=columnCount;j++) {
-						 if(j==4) {
-							data[i-1][j-1]= ""+rs.getInt(j);
-					
-									
-						 }else {
-						 data[i-1][j-1]=rs.getString(j); //this code is incomplete by some reasons ;
-					
-						 }                    //the reason is that the quantity we have is of integer data type so we 
-						 //can not access it with get string method;
-					 }
-					rs.next();
+				 for(int i=0;i<rowCount;i++) {
+					 Books book =bookList.get(i);
+							data[i][1]= ""+book.getAuthor();
+						    data[i][0]=""+book.getBookname();
+						    data[i][2]= ""+book.getSubject();
+						    data[i][3]= ""+book.getQuantity();
+						    data[i][4]= ""+book.getId();
+						    data[i][5]= ""+book.getRackno();
+					 
 				 }
 				 table = new JTable(data,column); 
 				 scrollPane.setViewportView(table);
@@ -187,14 +189,52 @@ public class UserPanel extends JFrame {
 			    }
 			    else {
 			    	try {
-			    		System.out.println("First");
-			    	Connection con = new ConnectionManager().getConnection();
+			    		Configuration config = new Configuration().configure().addAnnotatedClass(Student.class).addAnnotatedClass(Books.class);
+			    		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+			    		SessionFactory sf = config.buildSessionFactory(sr); 
+			    	Session s0 = sf.openSession();
+                    Transaction tr = s0.beginTransaction();
+			    	 Student student = (Student) s0.get(Student.class, rollNo);
+			    	  Books book = (Books)s0.get(Books.class,id);
+			    	
+			         Session s1 = sf.openSession();
+			         Query q = s1.createQuery("FROM Student WHERE ubookid = '"+uid+"'");
+			         Query  q1 = s1.createQuery("FROM Student WHERE ubookid1 = '"+uid+"'");
+			         Student ceckStudent = (Student) q.uniqueResult();
+			         Student checkStudent =(Student) q1.uniqueResult();
+			         if(ceckStudent!=null||checkStudent!=null) {
+			        	 String name;
+			        	 String RollNo;
+			        	 if(ceckStudent!=null) {
+			        		 name = ceckStudent.getName();
+			        		 rollNo=ceckStudent.getRollno();
+			        	 }else {
+			        		name= checkStudent.getName();
+			        		rollNo = checkStudent.getRollno();
+			        	 }
+			        	 JOptionPane.showMessageDialog(UserPanel.this, "May Be Haven't Return This Book Properly This Book Is "
+			        	 		+ "Already Issue To \n"+rollNo);
+			         }else {
+			        	 if(student.getUbookid().isEmpty()||student.getUbookid1().isEmpty()) {
+			        		 if(student.getUbookid().isEmpty()) {
+			        			 student.setBookId(book.getId());
+			        			 student.setBookname(book.getBookname());
+			        			 student.setUbookid(uid);
+			        		 
+			        		 }else{
+			        			 //continues work
+			        			 
+			        		 }
+			        	 }
+			         }
+			    	 System.out.println("First");
+			    	//Connection con = new ConnectionManager().getConnection();
 			    	//System.out.println("second");
-			    	Statement s = con.createStatement();
+			    	//Statement s = con.createStatement();
 			    	//System.out.println("third");
-			    	ResultSet rs = s.executeQuery("SELECT ubookid1,ubookid2, book_name_1,book_name_2,book_id1,book_id2 FROM students WHERE"
-			    			+ " rollno='"+rollNo+"';");
-			    	rs.next();
+			    	//ResultSet rs = s.executeQuery("SELECT ubookid1,ubookid2, book_name_1,book_name_2,book_id1,book_id2 FROM students WHERE"
+			    		//	+ " rollno='"+rollNo+"';");
+			    	//rs.next();
 			    	Statement s3 = con.createStatement();
 			    	Statement s4 = con.createStatement();
 			    	ResultSet rs3 = s3.executeQuery("SELECT * FROM students WHERE ubookid1 = '"+uid+"';");
