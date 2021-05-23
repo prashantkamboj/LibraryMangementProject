@@ -107,9 +107,9 @@ public class UserPanel extends JFrame {
 				 table = new JTable(data,column); 
 				 scrollPane.setViewportView(table);
 				 scrollPane.setHorizontalScrollBar(new JScrollBar());
-				  }catch (Exception
+				  }catch (Exception                   
 						  e) {
-					// TODO: handle exception
+					// TODO: handle exception                   
 					  JOptionPane.showMessageDialog(UserPanel.this, e.getMessage());
 				}
 				 
@@ -126,7 +126,7 @@ public class UserPanel extends JFrame {
 		
 		sNameField = new JTextField();
 		sNameField.setBounds(211, 77, 177, 19);
-		getContentPane().add(sNameField);
+		getContentPane().add(sNameField);                   
 		sNameField.setColumns(10);
 		
 		JLabel lblName = new JLabel("Name :");
@@ -173,26 +173,24 @@ public class UserPanel extends JFrame {
 		lblRollNumber.setFont(new Font("Dialog", Font.BOLD, 15));
 		lblRollNumber.setBounds(68, 199, 125, 15);
 		getContentPane().add(lblRollNumber);
-		
 		JButton btnDone = new JButton("Done");
 		btnDone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Hello First ");
+				
 				String sName = sNameField.getText().trim();
 				String rollNo = rollNofield.getText().trim();
 				String id  = idField.getText().trim();
-				String bookName = bookNameField.getName();
+				String bookName = bookNameField.getText();
 			    String uid = uidField.getText().trim();
-			    System.out.println("Hello Ji");
+			
 			    Date date = new Date();
 			    String dates = date.getDay()+"/"+date.getMonth()+"/"+date.getYear();
-			    System.out.println("Yha To Ni Hai Error");
-			   /* if(sName.equals("")||rollNo.equals("")||id.equals("")||bookName.equals("")||uid.equals("")) {
-			    	System.out.println("yha bhi ni aa  rha hai");
+			    
+			    if(sName.equals("") || rollNo.equals("") || id.equals("") || bookName.equals("") || uid.equals("")) {
 			    	JOptionPane.showMessageDialog(UserPanel.this,"All Fields Are Required To FiLL");
 			    }
-			    else {*/
-			    	System.out.println("Yhan Pe?");
+			    else {
+			    	
 			    	try {
 			    		System.out.println("Hello");
 			    		Configuration config = new Configuration().configure().addAnnotatedClass(Student.class).addAnnotatedClass(Books.class);
@@ -249,75 +247,14 @@ public class UserPanel extends JFrame {
 			        		 JOptionPane.showMessageDialog(UserPanel.this,"NOt Enough Space");
 			        	 }
 			         }
-						/*
-						 * System.out.println("First"); //Connection con = new
-						 * ConnectionManager().getConnection(); //System.out.println("second");
-						 * //Statement s = con.createStatement(); //System.out.println("third");
-						 * //ResultSet rs = s.
-						 * executeQuery("SELECT ubookid1,ubookid2, book_name_1,book_name_2,book_id1,book_id2 FROM students WHERE"
-						 * // + " rollno='"+rollNo+"';"); //rs.next(); Statement s3 =
-						 * con.createStatement(); Statement s4 = con.createStatement(); ResultSet rs3 =
-						 * s3.executeQuery("SELECT * FROM students WHERE ubookid1 = '"+uid+"';");
-						 * ResultSet rs4 =
-						 * s4.executeQuery("SELECT * FROM students WHERE ubookid2 = '"+uid+"';"); String
-						 * uBookId1 = rs.getString("ubookid1"); String uBookId2 =
-						 * rs.getString("ubookid2"); String bookName1 = rs.getString("book_name_1");
-						 * String bookName2 = rs.getString("book_name_2"); String bookId1 =
-						 * rs.getString("book_id1"); String bookId2 = rs.getString("book_id2");
-						 * System.out.println(uBookId1); boolean rs3check = rs3.next();
-						 * if(rs3check||rs4.next()){ String rollnoString; if(rs3check) {
-						 * rollnoString=rs3.getString("rollno"); }else {
-						 * rollnoString=rs4.getString("rollno"); }
-						 * JOptionPane.showMessageDialog(UserPanel.this,
-						 * "This Book Is Already Issue To A Person With RollNo. " +
-						 * rollnoString+" You Should \n Try To Rturn This Book Or Should Check Your Data Which You Are "
-						 * + "Entring Again"); } else { if(bookId1==null||bookId2==null) {
-						 * System.out.println("First Destination");
-						 * if(id.equals(bookId1)||id.equals(bookId2)) {
-						 * System.out.println("first Destination");
-						 * JOptionPane.showMessageDialog(UserPanel.
-						 * this,"This Book Id Already Issued To This Person"); }else {
-						 * if(bookId1==null){ try { Statement s1 = con.createStatement(); Statement s2 =
-						 * con.createStatement(); ResultSet rs1 =
-						 * s1.executeQuery("SELECT * FROM books WHERE id = '"+id+"';"); rs1.next(); int
-						 * qCheck= rs1.getInt("quantity"); if(qCheck!=0||qCheck>0) {
-						 * System.out.println("We Reach second Destination"); String fullBookName =
-						 * rs1.getString("book_name")+" Written By "+rs1.getString("author");
-						 * s2.executeUpdate("UPDATE students SET book_name_1='"+fullBookName+
-						 * "',ubookid1='"+uid+"',date_of_issue" +
-						 * "_book1='"+dates+"',book_id1='"+id+"' WHERE rollno='"+rollNo+"';"); int
-						 * quantity = rs1.getInt("quantity"); int finalQuantity = quantity-1;
-						 * s1.executeUpdate("UPDATE books SET quantity="+finalQuantity+" WHERE id = '"
-						 * +id+"';");
-						 * 
-						 * }else { JOptionPane.showMessageDialog(UserPanel.this,
-						 * "Problem With Quantity Of \n " +
-						 * "May Be You Have Not Returned Book Properly"); } } catch (Exception e) { //
-						 * TODO: handle exception JOptionPane.showMessageDialog(UserPanel.this,
-						 * e.getMessage()); } } else{ Statement s1 = con.createStatement(); ResultSet
-						 * rs1 = s1.executeQuery("SELECT * FROM books WHERE id = '"+id+"';");
-						 * rs1.next(); int qCheck= rs1.getInt("quantity"); if(qCheck!=0||qCheck>0) {
-						 * String fullBookName =
-						 * rs1.getString("book_name")+" Written By "+rs1.getString("author");
-						 * s1.execute("UPDATE students SET book_name_2='"+fullBookName+"',ubookid2='"+
-						 * uid+"',date_of_issue" +
-						 * "_book2='"+dates+"',book_id2='"+id+" WHERE rollno='"+rollNo+"';"); int
-						 * quantity = rs1.getInt("quantity"); int finalQuantity = quantity-1;
-						 * s1.executeUpdate("UPDATE books SET quantity="+finalQuantity+" WHERE id = "+id
-						 * +";"); }else { JOptionPane.showMessageDialog(UserPanel.this,
-						 * "Problem With Quantity Of \n " +
-						 * "May Be You Have Not Returned Book Properly"); } } }
-						 * 
-						 * }else { JOptionPane.showMessageDialog(UserPanel.this,
-						 * "Not Space To Issue Book"); } }
-						 */
 			    	}catch (Exception e) {
 						// TODO: handle exception
 			    		System.out.println("An Exception Occurred");
 			    		JOptionPane.showMessageDialog(UserPanel.this, e.getMessage());
 					}
-			    }
 			
+			    }
+			}
 		});
 		btnDone.setIcon(new ImageIcon(UserPanel.class.getResource("/IconImages/doneicon.png")));
 		btnDone.setBounds(154, 245, 117, 25);

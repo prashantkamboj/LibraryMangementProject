@@ -1,10 +1,16 @@
 package MainPacakge;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 @Entity
+@Cache (usage =  CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable
 public class Student {
  String name;
  @Id
