@@ -37,6 +37,9 @@ import javax.swing.JTable;
 import javax.swing.JScrollPane;
 
 public class UserPanel extends JFrame {
+	 Configuration config;
+	 ServiceRegistry sr;
+	 SessionFactory sf;
 	private JTextField searchField;
 	private JTextField sNameField;
 	private JTextField idField;
@@ -45,7 +48,20 @@ public class UserPanel extends JFrame {
 	private JTextField rollNofield;
 	private JTextField returnUBookIdField;
 	private JTable table;
+	void createConnetions() {
+		try { 
+		config = new Configuration().configure().addAnnotatedClass(Books.class).addAnnotatedClass(Student.class);
+		   sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+		    sf = config.buildSessionFactory(sr);
+		}catch (Exception e) { createConnetions();
+			// TODO: handle exception
+			JOptionPane.showMessageDialog(UserPanel.this,e.getMessage());
+			
+			
+		}
+		}
 	public UserPanel() {
+		createConnetions();
 		getContentPane().setLayout(null);
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(589, 168, 421, 368);
@@ -74,7 +90,7 @@ public class UserPanel extends JFrame {
 		lblBookName.setBounds(735, 81, 154, 15);
 		getContentPane().add(lblBookName);
 		
-		JButton btnSearch = new JButton("Search");
+		JButton btnSearch = new JButton("Searc Configuration configh");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				  String subject = searchField.getText().trim();
@@ -154,7 +170,7 @@ public class UserPanel extends JFrame {
 		lblBookName_1.setBounds(68, 137, 114, 15);
 		getContentPane().add(lblBookName_1);
 		
-		uidField = new JTextField();
+		uidField = new JTextField(); createConnetions();
 		uidField.setBounds(211, 166, 177, 19);
 		getContentPane().add(uidField);
 		uidField.setColumns(10);
@@ -192,20 +208,23 @@ public class UserPanel extends JFrame {
 			    else {
 			    	
 			    	try {
-			    		System.out.println("Hello");
-			    		Configuration config = new Configuration().configure().addAnnotatedClass(Student.class).addAnnotatedClass(Books.class);
-			    		ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
-			    		SessionFactory sf = config.buildSessionFactory(sr); 
+			    		
 			    	Session s0 = sf.openSession();
                     Transaction tr = s0.beginTransaction();
 			    	 Student student = (Student) s0.get(Student.class, rollNo);
 			    	  Books book = (Books)s0.get(Books.class,id);
 			    	  
 			         Session s1 = sf.openSession();
+			         s1.beginTransaction();
 			         Query q = s1.createQuery("FROM Student WHERE ubookid = '"+uid+"'");
 			         Query  q1 = s1.createQuery("FROM Student WHERE ubookid1 = '"+uid+"'");
+			         q.setCacheable(true);
+			         q1.setCacheable(true);
+			        
 			         Student ceckStudent = (Student) q.uniqueResult();
 			         Student checkStudent =(Student) q1.uniqueResult();
+			         s1.getTransaction().commit();
+			         s1.close();
 			         if(ceckStudent!=null||checkStudent!=null) {
 			        	 String name;
 			        	 String RollNo;
@@ -390,6 +409,6 @@ public class UserPanel extends JFrame {
 		btnRemoeStudent.setBounds(648, 624, 171, 50);
 		getContentPane().add(btnRemoeStudent);
 		
-
+		 
 	}
 }

@@ -9,8 +9,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Cache (usage =  CacheConcurrencyStrategy.READ_WRITE)
 @Cacheable
+@Cache (usage =  CacheConcurrencyStrategy.READ_WRITE)
+
 public class Student {
  String name;
  @Id
