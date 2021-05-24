@@ -302,54 +302,47 @@ public class UserPanel extends JFrame {
 					 JOptionPane.showMessageDialog(UserPanel.this, "Enter The Unique Book Id To Return The Book");
 				 }
 				 else {
+					   
 					   try {
-						Connection con = new ConnectionManager().getConnection();
-						Statement s= con.createStatement();
-						ResultSet rs = s.executeQuery("SELECT * FROM students WHERE ubookid1= '"+ubookid+"';");
-					    ResultSet rs1;
-						boolean isEmpty = rs.next();
-						if (!isEmpty) {
-							rs1= s.executeQuery("SELECT * FROM students WHERE ubookid2 = '"+ubookid+"';");
-							 if(!(rs1.next())) {
-								 JOptionPane.showMessageDialog(UserPanel.this,"There Is Some Problem Check The Student Account");
-							 }else {
-								 String bookid = rs1.getString("book_id2");
-								 String rollno1=rs1.getString("rollno");
-								 try {
-								 Statement s1 = con.createStatement();
-								  ResultSet rs2 = s1.executeQuery("SELECT quantity FROM books WHERE id = '"+bookid+"';");
-								  rs2.next();
-								  int quantity= rs2.getInt("quantity");
-								  int finalquantity = quantity+1;
-								  Statement s2 = con.createStatement();
-								  s2.executeUpdate("UPDATE books SET quantity = "+finalquantity+" WHERE id = '"+bookid+"';");
-								  s2.executeUpdate("UPDATE students SET ubookid2="+null+",book_name_2 ="+null+",book_id2="+null+",date_of_issue_book2="+null+";");
-							      JOptionPane.showMessageDialog(UserPanel.this, "Book 2 Is Returned Succefully");
-								 }catch (Exception e) {
-									// TODO: handle exception
-									 JOptionPane.showMessageDialog(UserPanel.this,e.getMessage());
-								}
-							 }
-							 
-							
-						}else {
-							String bookid = rs.getString("book_id1");
-							 String rollno=rs.getString("rollno");
-							 try {
-							 Statement s1 = con.createStatement();
-							  ResultSet rs2 = s1.executeQuery("SELECT quantity FROM books WHERE id = '"+bookid+"';");
-							  rs2.next();
-							  int quantity= rs2.getInt("quantity");
-							  int finalquantity = quantity+1;
-							  Statement s2 = con.createStatement();
-							  s2.executeUpdate("UPDATE books SET quantity = "+finalquantity+" WHERE id = '"+bookid+"';");
-							  s2.executeUpdate("UPDATE students SET ubookid1="+null+",book_name_1="+null+",book_id1="+null+",date_of_issue_book1="+null+";");
-						      JOptionPane.showMessageDialog(UserPanel.this, "Book 1 Is Returned Succefully");
-							 }catch (Exception e) {
-								// TODO: handle exception
-								 JOptionPane.showMessageDialog(UserPanel.this,e.getMessage());
-							}
-						}
+						   Session ss = sf.openSession();
+						   Transaction tr = ss.beginTransaction();
+						   Query q1 = ss.createQuery("from Student where ubookid="+ubookid);
+						   Query q2 = ss.createQuery("from Student where ubookid1="+ubookid);
+						   q2.setCacheable(true);
+						   q1.setCacheable(true);
+						   Student s1,s2;
+						   s1 = (Student) q1.uniqueResult();
+						   s2 = (Student) q2.uniqueResult();
+						   if(s1==null&&s2==null) {
+							    JOptionPane.showMessageDialog(UserPanel.this, "Book With This id Is Not Issued To Any Student\n Check Id You Have Entered");
+						   }else {
+							   if(s1!=null) {
+								   
+								   Books book =(Books)ss.get(Books.class, s1.getBookId());
+								   int quantity =book.getQuantity();
+								   quantity+=1;
+								   book.setQuantity(quantity);
+								   ss.update(book);
+								   s1.setBookId(null);
+								   s1.setBookname(null);
+								   s1.setUbookid(null);
+								   ss.update(s1);
+								   tr.commit();
+							   }else {
+
+								   Books book =(Books)ss.get(Books.class, s2.getBookId1());
+								   int quantity =book.getQuantity();
+								   quantity+=1;
+								   book.setQuantity(quantity);
+								   ss.update(book);
+								   s2.setBookId1(null);
+								   s2.setBookname1(null);
+								   s2.setUbookid1(null);
+								   ss.update(s2);
+								   tr.commit();
+							   }
+						   }
+						
 					} catch (Exception e) {
 						// TODO: handle exception
 						JOptionPane.showMessageDialog(UserPanel.this, e.getMessage());
