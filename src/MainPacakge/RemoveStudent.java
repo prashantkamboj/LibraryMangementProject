@@ -6,6 +6,14 @@ import javax.swing.JOptionPane;
 
 import java.awt.Font;
 import javax.swing.JTextField;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -23,7 +31,7 @@ public class RemoveStudent extends JFrame{
 		getContentPane().add(lblNewLabel);
 		
 		rollNoField = new JTextField();
-		rollNoField.setBounds(137, 93, 183, 19);
+		rollNoField.setBounds(137, 93, 183, 19); 
 		getContentPane().add(rollNoField);
 		rollNoField.setColumns(10);
 		
@@ -32,9 +40,15 @@ public class RemoveStudent extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 			      String rollno = rollNoField.getText().trim();
 			     try {
-			    	  Connection con = new ConnectionManager().getConnection();
-			    	  Statement s = con.createStatement();
-			    	   s.executeUpdate("DELETE FROM students WHERE rollno = '"+rollno+"';");
+			    	 Configuration confg = new Configuration().configure().addAnnotatedClass(Student.class);
+			    	 ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(confg.getProperties()).build();
+			    	  SessionFactory sf = confg.buildSessionFactory(sr);
+			    	   Session ss = sf.openSession();
+			    	  Transaction tr = ss.beginTransaction();
+			    	   Student s =  ss.get(Student.class, rollno);
+			    	   ss.remove(s);
+			    	   tr.commit();
+			    	    ss.close();
 			    	   JOptionPane.showMessageDialog(RemoveStudent.this, "Delete Account Successfully");
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(RemoveStudent.this,e.getMessage());
