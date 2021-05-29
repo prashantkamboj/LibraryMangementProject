@@ -36,7 +36,7 @@ public class DeleteBooks extends JFrame{
 		
 		JLabel lblDeleteBookPanel = new JLabel("Delete Book Panel");
 		lblDeleteBookPanel.setFont(new Font("Dialog", Font.BOLD, 20));
-		lblDeleteBookPanel.setBounds(167, 22, 224, 15);
+		lblDeleteBookPanel.setBounds(167, 22, 224, 15); 
 		getContentPane().add(lblDeleteBookPanel);
 		
 		idField = new JTextField();
