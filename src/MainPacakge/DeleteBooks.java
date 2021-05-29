@@ -82,6 +82,7 @@ public class DeleteBooks extends JFrame{
                           book.setQuantity(qcheck);
                           ss.update(book);
                           tr.commit();
+                          ss.close();
                          JOptionPane.showMessageDialog(DeleteBooks.this,"Books Deleted Succesfully");
 					}
 				} catch (Exception e) {
@@ -100,9 +101,12 @@ public class DeleteBooks extends JFrame{
 			   if(result== JOptionPane.YES_OPTION) {
 				String bookid = idField.getText().trim();
 				try {
-                    Connection con = new ConnectionManager().getConnection();
-                    Statement s = con.createStatement();
-                    s.executeUpdate("DELETE FROM books WHERE id ='"+bookid+"';");
+					   Session ss = sf.openSession();
+					    Transaction tr = ss.beginTransaction();
+					    Books book = ss.get(Books.class, bookid);
+					    ss.remove(book);
+                        tr.commit();
+                      ss.close();
                     }catch (Exception e) {
 						// TODO: handle exception
                     	JOptionPane.showMessageDialog(DeleteBooks.this,e.getMessage());	
