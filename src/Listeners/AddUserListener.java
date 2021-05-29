@@ -27,7 +27,7 @@ public class AddUserListener implements ActionListener {
 		this.idField = textFieldId;  
 	}
 	@Override
-	public void actionPerformed(ActionEvent arg0) {  //Method Override For The Action AddUser 
+	public void actionPerformed(ActionEvent arg0) {  //Method Override For The Action AddUser  
 	    
 		String nameString = nameField.getText();
 		String passString = passField.getText().trim();
