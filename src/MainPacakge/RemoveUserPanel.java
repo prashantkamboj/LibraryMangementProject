@@ -11,6 +11,14 @@ import java.sql.Connection;
 import java.sql.Statement;
 
 import javax.swing.JTextField;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import java.awt.Color;
 
 import javax.swing.ImageIcon;
@@ -51,21 +59,22 @@ public class RemoveUserPanel extends JFrame{
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				String ids = textField.getText().trim();
+				int id = Integer.parseInt(ids);
 				if(ids.equals("")) {
 					JOptionPane.showMessageDialog(new RemoveUserPanel(), "Enter The Id ");
 				}
 				else {
 				try {
-				
-				 Connection con = new ConnectionManager().getConnection();
-				 Statement s = con.createStatement();
-				 int rs = s.executeUpdate("DELETE FROM user WHERE id = '"+ids+"';");
-				 if(rs==1) {
+				   Configuration config = new Configuration().configure().addAnnotatedClass(User.class);
+				   ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+				   SessionFactory sf= config.buildSessionFactory(sr);
+				    Session ss = sf.openSession();
+				    Transaction tr = ss.beginTransaction();
+				    User user = ss.get(User.class, id);
+				     ss.remove(user);
+				     tr.commit();
 					 JOptionPane.showMessageDialog(new JFrame(),"User Deletes SuccessFully");
-				 }
-				 else {
-					 JOptionPane.showMessageDialog(new JFrame(),"User SuccessFully Deleted");
-				 }
+				 
 				} catch (Exception e) {
 					// TODO: handle exception
 					JOptionPane.showMessageDialog(new JFrame(), e.getMessage());

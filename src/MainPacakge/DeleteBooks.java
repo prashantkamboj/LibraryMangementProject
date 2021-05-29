@@ -6,6 +6,14 @@ import javax.swing.JOptionPane;
 
 import java.awt.Font;
 import javax.swing.JTextField;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -17,7 +25,13 @@ import java.awt.event.ActionEvent;
 public class DeleteBooks extends JFrame{
 	private JTextField idField;
 	private JTextField quantityField;
+	Configuration config;
+	ServiceRegistry sr;
+  SessionFactory sf;	
 	public DeleteBooks() {
+		config = new Configuration().configure().addAnnotatedClass(Books.class);
+		sr = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
+		sf  = config.buildSessionFactory(sr);   
 		getContentPane().setLayout(null);
 		
 		JLabel lblDeleteBookPanel = new JLabel("Delete Book Panel");
@@ -55,17 +69,19 @@ public class DeleteBooks extends JFrame{
 				   JOptionPane.showMessageDialog(DeleteBooks.this, "Enter Required Field And A Proper Quantity");
 				}else {
 				try {
-                     Connection con = new ConnectionManager().getConnection();
-                     Statement s = con.createStatement();
-                     ResultSet rs = s.executeQuery("SELECT quantity from books WHERE id = '"+bookid+"';");
-                     rs.next();
-                     int qcheck = rs.getInt("quantity");
+				    Session ss = sf.openSession();
+				    Transaction tr = ss.beginTransaction();
+				    Books book = ss.get(Books.class, bookid);
+				     int qcheck = book.getQuantity();
+				    
                      if(qcheck<quantity) {
                     	 JOptionPane.showMessageDialog(DeleteBooks.this, "Enter Less Quantity There Is Not That Many Books Are Present");
                     	       }
                      else {
                          qcheck = qcheck-quantity;
-                         s.executeUpdate("UPDATE books SET quantity = "+qcheck+" WHERE id ='"+bookid+"';");
+                          book.setQuantity(qcheck);
+                          ss.update(book);
+                          tr.commit();
                          JOptionPane.showMessageDialog(DeleteBooks.this,"Books Deleted Succesfully");
 					}
 				} catch (Exception e) {
