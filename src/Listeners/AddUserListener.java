@@ -24,7 +24,7 @@ public class AddUserListener implements ActionListener {
 	public AddUserListener( JTextField textFieldName,JTextField textFieldPassword,JTextField textFieldId) {            //Constructor For The AddUserListener
 		this.nameField= textFieldName;
 		this.passField= textFieldPassword;
-		this.idField = textFieldId;  
+		this.idField = textFieldId;   
 	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {  //Method Override For The Action AddUser  
